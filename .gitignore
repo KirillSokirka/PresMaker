@@ -17,3 +17,4 @@ PresentationMaker/obj/Debug/net5.0-windows/PresentationMaker.GeneratedMSBuildEdi
 *.targets
 PresentationMaker/obj/Debug/net5.0-windows/PresentationMaker.csproj.FileListAbsolute.txt
 PresentationMaker/PresentationMaker.csproj.user
+*csproj.CopyComplete
