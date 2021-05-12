@@ -100,6 +100,14 @@ namespace PresentationMaker
                 MessageBox.Show("Перевірте всі поля");
                 return;
             }
+            TextAnalyser textAnalyser = new TextAnalyser();
+            var sentances = textAnalyser.Analyse(this.textFile, this.keyWords);
+            if(sentances.Count == 0)
+            {
+                MessageBox.Show("Презентацію не було створено\n" +
+                    "оскільки відповідні речення не було знайдено");
+                return;
+            }
             MessageBox.Show("Презентацію створено");
         }
     }
