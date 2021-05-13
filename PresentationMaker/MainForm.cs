@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PresentationMaker
@@ -21,75 +15,83 @@ namespace PresentationMaker
         {
             openTxtFileDialog.Filter = "Текстові файли(*.txt)|*.txt|Всі файли(*.*)|*.*";
             if (openTxtFileDialog.ShowDialog() == DialogResult.Cancel)
+            {
                 return;
+            }
             TextFile.Text = openTxtFileDialog.FileName;
         }
         private void GetResultFile(object sender, EventArgs e)
         {
             openResultFileDialog.Filter = "Файли презентацій(*.pptx)|*.pptx|Всі файли(*.*)|*.*";
             if (openResultFileDialog.ShowDialog() == DialogResult.Cancel)
+            {
                 return;
+            }            
             ResultFile.Text = openResultFileDialog.FileName;
         }
         private void keyWordsValidation(object sender, EventArgs e)
         {
             fieldsStatus[0] = false;
-            if (String.IsNullOrEmpty(this.KeyWords.Text))
+            if (string.IsNullOrEmpty(KeyWords.Text))
             {
-                keywordsErrorProvider.SetError(this.KeyWords, "Поле пусте");
+                keywordsErrorProvider.SetError(KeyWords, "Поле пусте");
                 return;
             }
-            keywordsErrorProvider.SetError(this.KeyWords, String.Empty);
+            keywordsErrorProvider.SetError(KeyWords, string.Empty);
             keyWords = KeyWords.Text;
             fieldsStatus[0] = true;
         }
         private void txtFileValidation(object sender, EventArgs e)
         {
             fieldsStatus[1] = false;
-            if (String.IsNullOrEmpty(this.TextFile.Text))
+            if (string.IsNullOrEmpty(TextFile.Text))
             {
-                txtFileErrorProvider.SetError(this.TextFile, "Поле пусте");
+                txtFileErrorProvider.SetError(TextFile, "Поле пусте");
                 return;
             }
-            if (!CheckFiles(this.TextFile.Text))
+            if (!CheckFiles(TextFile.Text))
             {
-                txtFileErrorProvider.SetError(this.TextFile, "Такого файла не існує");
+                txtFileErrorProvider.SetError(TextFile, "Такого файла не існує");
                 return;
             }
-            txtFileErrorProvider.SetError(this.TextFile, String.Empty);
+            txtFileErrorProvider.SetError(TextFile, string.Empty);
             textFile = TextFile.Text;
             fieldsStatus[1] = true;
         }
         private void resultFileValidation(object sender, EventArgs e)
         {
             fieldsStatus[2] = false;
-            if (String.IsNullOrEmpty(this.ResultFile.Text))
+            if (string.IsNullOrEmpty(ResultFile.Text))
             {
-                resultFileErrorProvider.SetError(this.ResultFile, "Поле пусте");
+                resultFileErrorProvider.SetError(ResultFile, "Поле пусте");
                 return;
             }
-            if (!CheckFiles(this.ResultFile.Text))
+            if (!CheckFiles(ResultFile.Text))
             {
-                resultFileErrorProvider.SetError(this.ResultFile, "Такого файла не існує");
+                resultFileErrorProvider.SetError(ResultFile, "Такого файла не існує");
                 return;
             }
             fieldsStatus[2] = true;
-            resultFileErrorProvider.SetError(this.ResultFile, String.Empty);
+            resultFileErrorProvider.SetError(ResultFile, string.Empty);
             resultFile = ResultFile.Text;
         }
         private bool CheckFiles(string file)
         {
             FileInfo tester = new FileInfo(file);
             if (tester.Exists)
+            {
                 return true;
+            }
             return false;
         }
         private bool CheckAllFields()
         {
-            foreach (var item in fieldsStatus)
+            foreach (bool item in fieldsStatus)
             {
                 if (item == false)
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -101,13 +103,23 @@ namespace PresentationMaker
                 return;
             }
             TextAnalyser textAnalyser = new TextAnalyser();
-            var sentances = textAnalyser.Analyse(this.textFile, this.keyWords);
-            if(sentances.Count == 0)
+            var sentances = textAnalyser.Analyse(textFile, keyWords);
+            if (sentances.Length == 0)
             {
                 MessageBox.Show("Презентацію не було створено\n" +
                     "оскільки відповідні речення не було знайдено");
                 return;
             }
+            try
+            {
+                PresMaker presMaker = new PresMaker();
+                presMaker.Create(resultFile, sentances);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+                return;
+            }           
             MessageBox.Show("Презентацію створено");
         }
     }

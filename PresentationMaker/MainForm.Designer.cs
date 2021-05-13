@@ -193,7 +193,7 @@ namespace PresentationMaker
             ((System.ComponentModel.ISupportInitialize)(this.resultFileErrorProvider)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
+              
         }
         #endregion
         private string textFile;
