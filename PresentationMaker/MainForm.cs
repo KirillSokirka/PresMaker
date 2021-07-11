@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using PresentationMaker.Parser;
 
 namespace PresentationMaker
 {
@@ -95,15 +96,17 @@ namespace PresentationMaker
             }
             return true;
         }
-        private void MakePresButton(object sender, EventArgs e)
+        private async void MakePresButton(object sender, EventArgs e)
         {
             if (!CheckAllFields())
             {
                 MessageBox.Show("Перевірте всі поля");
                 return;
             }
-            TextAnalyser textAnalyser = new TextAnalyser();
-            var sentances = textAnalyser.Analyse(textFile, keyWords);
+            SlovnykParser parser = new SlovnykParser();
+            IParserSettings settings = new SlovnykSettings();
+            var textAnalyser = new TextAnalyser<List<string>>(parser, settings);
+            var sentances = await textAnalyser.Analyse(textFile, keyWords);
             if (sentances.Length == 0)
             {
                 MessageBox.Show("Презентацію не було створено\n" +

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using PowerPoint = NetOffice.PowerPointApi;
+﻿using NetOffice.OfficeApi.Enums;
 using NetOffice.PowerPointApi;
 using NetOffice.PowerPointApi.Enums;
-using NetOffice.OfficeApi.Enums;
 using NetOffice.PowerPointApi.Tools;
-using System.Windows.Forms;
+using System;
+using PowerPoint = NetOffice.PowerPointApi;
 
 namespace PresentationMaker
 {
@@ -22,15 +16,15 @@ namespace PresentationMaker
         {
             application = new PowerPoint.Application();
             utils = new CommonUtils(application);
-            Presentation = application.Presentations.Add();          
-        }        
+            Presentation = application.Presentations.Add();
+        }
         public void Create(string fileRoad, string[] sentances)
         {
             try
             {
                 for (int i = 0; i < sentances.Length; i++)
                 {
-                    var slide = Presentation.Slides.Add(i + 1, PpSlideLayout.ppLayoutBlank);                    
+                    var slide = Presentation.Slides.Add(i + 1, PpSlideLayout.ppLayoutBlank);
                     var textBox = slide.Shapes.AddTextbox(MsoTextOrientation.msoTextOrientationHorizontal, 300, 250, 600, 100);
                     textBox.TextFrame.TextRange.Text = sentances[i];
                 }
@@ -39,7 +33,7 @@ namespace PresentationMaker
             catch (Exception)
             {
                 throw new Exception("Під час створення презентації\n виникла помилка");
-            }            
+            }
         }
         private void SavePres(string fileRoad)
         {
@@ -49,13 +43,12 @@ namespace PresentationMaker
             application.Quit();
             application.Dispose();
         }
-
         private string[] GetRoots(string fileRoad)
         {
             var file = fileRoad.Replace(".pptx", "").Split("\\");
             string[] info = new string[2];
             string temp = null;
-            for (int i = 0; i < file.Length-1; i++)
+            for (int i = 0; i < file.Length - 1; i++)
             {
                 temp += file[i] + "\\";
             }

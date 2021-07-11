@@ -2,17 +2,29 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using PresentationMaker.Parser;
 
 namespace PresentationMaker
 {
-    public class TextAnalyser
+    public class TextAnalyser<T> where T: class
     {
-        public string[] Analyse(string file, string words)
+        private IParser<List<string>> parser;
+        private IParserSettings slovnykSettings;
+        public TextAnalyser(IParser<List<string>> parser, IParserSettings settings)
+        {
+            this.parser = parser;
+            this.slovnykSettings = settings;
+        }
+        public async Task<string[]> Analyse(string file, string words)
         {
             string text = ReadFile(file);
             var sentances = SplitIntoSentances(text);
             List<string> keyWords = SplitIntoWords(words);
-            List<string> resultSentances = GetResultSentances(sentances, keyWords);
+            slovnykSettings.Word = keyWords;
+            var parserWorker = new ParserWorker<List<string>>(parser, slovnykSettings);
+            var keyWordsForms =  await parserWorker.Work();
+            List<string> resultSentances = GetResultSentances(sentances, keyWords.Concat(keyWordsForms));
             return resultSentances.ToArray();
         }
         private static string ReadFile(string file)
@@ -54,7 +66,7 @@ namespace PresentationMaker
             string[] words = text.Split(",");
             return words.Where(word => !string.IsNullOrEmpty(word)).ToList();
         }
-        private static List<string> GetResultSentances(List<string> sentances, List<string> keyWords)
+        private static List<string> GetResultSentances(IEnumerable<string> sentances, IEnumerable<string> keyWords)
         {
             List<string> keySentances = new List<string>();
             foreach (string sentance in sentances)
@@ -66,7 +78,7 @@ namespace PresentationMaker
             }
             return keySentances;
         }
-        private static bool CheckForKeyWords(string sentance, List<string> keyWords)
+        private static bool CheckForKeyWords(string sentance, IEnumerable<string> keyWords)
         {
             foreach (string word in keyWords)
             {
